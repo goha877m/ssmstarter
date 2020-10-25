@@ -51,24 +51,37 @@ public class BookController {
         return "detail";
     }
 
-    @RequestMapping(value = "/appoint", method = RequestMethod.GET)
+    @RequestMapping(value = "/appoint")
     private String appoint(@RequestParam(value = "bookId", required = false) Long bookId, Model model) {
-        logger.info("参数打印bookId：{}" , bookId);
-        return "appoint";
-//        if (bookId == null) {
-//            return "redirect:/book/appoint";
-//        }
-//        Book book = bookService.getById(bookId);
-//        if (book == null) {
-//            return "forward:/book/appoint";
-//        }
-//        //TODO studentID 暂时用固定值
-//        long studentId = 12345678L;
-//        AppointExecution appoint = bookService.appoint(bookId, studentId);
-//        if (appoint.getState() == AppointStateEnum.SUCCESS.getState()) {
-//			return "forward:/book/appoint";
-//        }
-//        return "forward:/book/appoint";
+//        logger.info("参数打印bookId：{}" , bookId);
+//        return "appoint";
+        List<Book> list = bookService.getList();
+        model.addAttribute("list", list);
+        if (bookId == null) {
+            return "appoint";
+        }
+        Book book = bookService.getById(bookId);
+        if (book == null) {
+            return "appoint";
+        }
+        //TODO studentID 暂时用固定值
+        long studentId = 12345678L;
+        try {
+            AppointExecution appoint = bookService.appoint(bookId, studentId);
+            if (appoint.getState() == AppointStateEnum.SUCCESS.getState()) {
+                logger.info("id为{}书籍预定成功！" , bookId);
+                return "forward:/book/appoint";
+            }
+        }catch (RepeatAppointException rae){
+            logger.info("id为{}书籍重复预定" , bookId);
+            //TODO 跳转导致重复预定问题
+            return "forward:/book/appoint";
+        } catch(NoNumberException nne){
+            logger.info("id为{}书籍库存不足" , bookId);
+            return "appoint";
+        }
+
+        return "forward:/book/appoint";
     }
 
     // ajax json
