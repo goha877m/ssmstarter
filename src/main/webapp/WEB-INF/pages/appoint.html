@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>list</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>添加书籍</title>
+    </head>
+    <body>
+        <p> 预定书籍<p>
+        <ul th:each="item : ${list}">
+            <li>
+                <p>书籍：</p>
+                <p th:text="${item.bookId}">书籍id</p>
+                <p th:text="${item.name}">名称：</p>
+                <p th:text="${item.number}">数字：</p>
+            </li>
+        </ul>
+
+    </body>
+</html>
